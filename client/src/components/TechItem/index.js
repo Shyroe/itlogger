@@ -8,16 +8,16 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Delete } from "@material-ui/icons";
-const TechItem = () => {
+const TechItem = ({ tech }) => {
   return (
-    <div style={{ marginBottom: "50px" }}>
-      <Typography variant="h2" component="h2">
-        Technician List
-      </Typography>
+    <div key={tech.id} style={{ marginBottom: "50px" }}>
       <Card className="card">
         <div className="row">
           <CardContent className="col s11">
-            <Typography className="card-title">Jhon Doe</Typography>
+            <Typography className="card-title">
+              {" "}
+              {tech.firstname} {tech.lastname}{" "}
+            </Typography>
           </CardContent>
           <CardActionArea className="col s1">
             <IconButton>

@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/styles";
 import "materialize-css/dist/css/materialize.min.css";
 import M from "materialize-css/dist/js/materialize.min.js";
 import LogItem from "./components/LogItem";
-import AddLogForm from "./components/AddLogForm";
+import LogForm from "./components/LogForm";
 import AddTechForm from "./components/AddTechForm/index";
 import TechItem from "./components/TechItem";
 import api from "./services/api";
@@ -47,13 +47,77 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "white",
     border: "2px solid orangered",
   },
+  modalContent: {
+    backgroundColor: "white",
+    padding: "5vh 5vw",
+    height: "100%",
+  },
 }));
 
 function App() {
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openTechModal, setOpenTechModal] = useState(false);
   const [openTechListModal, setOpenTechListModal] = useState(false);
+  const [editLog, setEditLog] = useState(true);
   const [logs, setLogs] = useState([]);
+  const [techs, setTechs] = useState([]);
+  const [formLog, setFormLog] = useState({
+    description: "",
+    warn: false,
+    tech_id: null,
+  });
+
+  const clearForm = () => {
+    setFormLog({
+      description: "",
+      warn: false,
+      tech_id: null,
+    });
+  };
+
+  const handleFormLog = (e) => {
+    setFormLog({
+      ...formLog,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const submitFormLog = async (e) => {
+    e.preventDefault();
+    //editLog
+    setEditLog(false);
+    const newLog = {
+      description: formLog.description,
+      warn: formLog.warn,
+      tech_id: formLog.tech_id,
+    };
+
+    const dataLog = await api.post("/logs", newLog);
+    console.log("submit Log: ", dataLog);
+    getAllLogs();
+  };
+
+  function handleEditLog(id) {
+    setEditLog(true);
+    console.log("editLog Id: ", id);
+    const selectedItem = logs.find((item) => item.id == id);
+    console.log("selectedItem: ", selectedItem);
+
+    setFormLog({
+      ...formLog,
+      description: selectedItem.description,
+      warn: selectedItem.warn,
+      tech_id: selectedItem.tech_id,
+    });
+  }
+
+  async function deleteLog(id) {
+    console.log("deleteLog Id: ", id);
+    const dataLog = await api.delete(`/logs/${id}`);
+    console.log("dataLog: ", dataLog);
+    // getAllLogs();
+  }
+
   function initMaterialize() {
     M.AutoInit();
   }
@@ -64,9 +128,16 @@ function App() {
     setLogs([...logsData.data]);
   }
 
+  async function getAllTechs() {
+    const techsData = await api.get("/techs");
+    console.log("TechsData: ", techsData);
+    setTechs([...techsData.data]);
+  }
+
   useEffect(() => {
     initMaterialize();
     getAllLogs();
+    getAllTechs();
   }, []);
 
   const handleOpenLogModal = () => {
@@ -118,12 +189,9 @@ function App() {
         <Container className="list-logs">
           <>
             {logs.map((log) => (
-              <LogItem log={log} />
+              <LogItem handleOpenLogModal={handleOpenLogModal} log={log} />
             ))}
           </>
-          {/* <LogItem />
-          <LogItem />
-          <LogItem /> */}
         </Container>
       </Container>
       <Modal
@@ -133,7 +201,12 @@ function App() {
         aria-describedby="simple-modal-description"
         className={classes.modalStyle}
       >
-        <AddLogForm />
+        <LogForm
+          submitFormLog={submitFormLog}
+          handleFormLog={handleFormLog}
+          formLog={formLog}
+          techs={techs}
+        />
       </Modal>
 
       <Modal
@@ -146,15 +219,29 @@ function App() {
         <AddTechForm />
       </Modal>
 
-      {/* <Modal
+      <Modal
         open={openTechListModal}
         onClose={handleCloseTechListModal}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
         className={classes.modalStyle}
       >
-        <TechItem />
-      </Modal> */}
+        <div className={classes.modalContent}>
+          <Typography
+            style={{ marginBottom: "40px" }}
+            variant="h2"
+            component="h2"
+          >
+            Technician List
+          </Typography>
+          <>
+            {techs.map((tech) => (
+              <TechItem tech={tech} />
+            ))}
+          </>
+        </div>
+        {/* <TechItem /> */}
+      </Modal>
       <Container className="footer">
         <div className="fixed-action-btn">
           <a
