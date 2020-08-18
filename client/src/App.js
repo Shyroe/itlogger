@@ -13,14 +13,15 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import AccountCircleRoundedIcon from "@material-ui/icons/AccountCircleRounded";
-import { makeStyles } from "@material-ui/styles";
 import "./App.css";
+import { makeStyles } from "@material-ui/styles";
 import "materialize-css/dist/css/materialize.min.css";
 import M from "materialize-css/dist/js/materialize.min.js";
 import LogItem from "./components/LogItem";
 import AddLogForm from "./components/AddLogForm";
 import AddTechForm from "./components/AddTechForm/index";
 import TechItem from "./components/TechItem";
+import api from "./services/api";
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -52,12 +53,20 @@ function App() {
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openTechModal, setOpenTechModal] = useState(false);
   const [openTechListModal, setOpenTechListModal] = useState(false);
+  const [logs, setLogs] = useState([]);
   function initMaterialize() {
     M.AutoInit();
   }
 
+  async function getAllLogs() {
+    const logsData = await api.get("/logs");
+    console.log("LogsData: ", logsData);
+    setLogs([...logsData.data]);
+  }
+
   useEffect(() => {
     initMaterialize();
+    getAllLogs();
   }, []);
 
   const handleOpenLogModal = () => {
@@ -107,9 +116,14 @@ function App() {
           <Typography className="system-title">System Logs</Typography>
         </Container>
         <Container className="list-logs">
+          <>
+            {logs.map((log) => (
+              <LogItem log={log} />
+            ))}
+          </>
+          {/* <LogItem />
           <LogItem />
-          <LogItem />
-          <LogItem />
+          <LogItem /> */}
         </Container>
       </Container>
       <Modal
@@ -132,7 +146,7 @@ function App() {
         <AddTechForm />
       </Modal>
 
-      <Modal
+      {/* <Modal
         open={openTechListModal}
         onClose={handleCloseTechListModal}
         aria-labelledby="simple-modal-title"
@@ -140,7 +154,7 @@ function App() {
         className={classes.modalStyle}
       >
         <TechItem />
-      </Modal>
+      </Modal> */}
       <Container className="footer">
         <div className="fixed-action-btn">
           <a
