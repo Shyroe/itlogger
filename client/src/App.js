@@ -64,18 +64,20 @@ function App() {
   const [formLog, setFormLog] = useState({
     description: "",
     warn: false,
-    tech_id: null,
+    tech: "",
   });
 
   const clearForm = () => {
     setFormLog({
       description: "",
       warn: false,
-      tech_id: null,
+      tech: "",
     });
   };
 
   const handleFormLog = (e) => {
+    // console.log("Handle targetName: ", e.target.name);
+    // console.log("Handle targetValue: ", e.target.value);
     setFormLog({
       ...formLog,
       [e.target.name]: e.target.value,
@@ -86,15 +88,34 @@ function App() {
     e.preventDefault();
     //editLog
     setEditLog(false);
+
+    const techItem = techs.find((tech) => {
+      let fullname = tech.firstname + tech.lastname;
+      let techTrated = formLog.tech.trim().replace(" ", "");
+      // console.log("fullnameTrated: ", tratedFullname);
+      console.log("formLog tech: ", techTrated);
+      console.log("fullname: ", fullname.trim());
+      return fullname.trim() == techTrated;
+    });
+
+    console.log("techItem: ", techItem);
+
     const newLog = {
       description: formLog.description,
       warn: formLog.warn,
-      tech_id: formLog.tech_id,
+      // tech_id: techItem.id,
     };
 
-    const dataLog = await api.post("/logs", newLog);
+    console.log("submit newLog: ", newLog);
+
+    const dataLog = await api.post("/logs", newLog, {
+      headers: {
+        tech_id: techItem.id,
+      },
+    });
     console.log("submit Log: ", dataLog);
     getAllLogs();
+    clearForm();
   };
 
   function handleEditLog(id) {
@@ -107,7 +128,7 @@ function App() {
       ...formLog,
       description: selectedItem.description,
       warn: selectedItem.warn,
-      tech_id: selectedItem.tech_id,
+      tech: selectedItem.tech,
     });
   }
 
@@ -205,6 +226,7 @@ function App() {
           submitFormLog={submitFormLog}
           handleFormLog={handleFormLog}
           formLog={formLog}
+          setFormLog={setFormLog}
           techs={techs}
         />
       </Modal>

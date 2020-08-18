@@ -44,18 +44,22 @@ const useStyles = makeStyles({
   },
 });
 
-const LogForm = ({ submitFormLog, handleFormLog, formLog, techs, editLog }) => {
+const LogForm = ({
+  submitFormLog,
+  handleFormLog,
+  formLog,
+  techs,
+  editLog,
+  setFormLog,
+}) => {
   const classes = useStyles();
-  const [age, setAge] = React.useState("");
-  const [checkedB, setCheckedB] = React.useState(true);
 
-  // const handleChange = (event) => {
-  //   setAge(event.target.value);
-  // };
-
-  // const handleCheckbox = (event) => {
-  //   setCheckedB(event.target.checked);
-  // };
+  const handleCheckbox = (e) => {
+    setFormLog({
+      ...formLog,
+      warn: !formLog.warn,
+    });
+  };
 
   return (
     <div className={classes.wrapper}>
@@ -78,21 +82,24 @@ const LogForm = ({ submitFormLog, handleFormLog, formLog, techs, editLog }) => {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            name="tech_id"
-            value={1}
+            name="tech"
+            value={formLog.tech}
             onChange={handleFormLog}
             className={classes.select}
           >
             <MenuItem value="" disabled selected>
               Select a item
             </MenuItem>
-            <div>
-              {techs.map((tech) => (
-                <MenuItem value={tech.id}>
-                  {tech.firstname} {tech.lastname}
-                </MenuItem>
-              ))}
-            </div>
+            {/* <div> */}
+            {techs.map((tech) => (
+              <MenuItem
+                key={tech.id}
+                value={`${tech.firstname} ${tech.lastname}`}
+              >
+                {tech.firstname} {tech.lastname}
+              </MenuItem>
+            ))}
+            {/* </div> */}
             {/* <MenuItem value={10}>Ten</MenuItem>
             <MenuItem value={20}>Twenty</MenuItem>
             <MenuItem value={30}>Thirty</MenuItem> */}
@@ -104,7 +111,7 @@ const LogForm = ({ submitFormLog, handleFormLog, formLog, techs, editLog }) => {
               checked={formLog.warn}
               name="warn"
               value={formLog.warn}
-              onChange={handleFormLog}
+              onChange={handleCheckbox}
               color="primary"
             />
           }
