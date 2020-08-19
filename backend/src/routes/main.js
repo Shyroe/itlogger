@@ -7,9 +7,11 @@ const LogController = require("../controllers/LogController");
 
 routes.get("/techs", TechController.getAllTechs);
 routes.post("/techs", TechController.createTech);
+routes.delete("/techs/:id", TechController.deleteTech);
+
+routes.get("/logs", LogController.index);
 routes.post("/logs", LogController.store);
 routes.put("/logs/:log_id", LogController.update);
 routes.delete("/logs/:id", LogController.destroy);
-routes.get("/logs", LogController.index);
 
 module.exports = routes;

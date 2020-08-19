@@ -7,16 +7,20 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { Delete } from "@material-ui/icons";
+import { Delete, Edit } from "@material-ui/icons";
 
-const LogItem = ({ log, handleOpenLogModal }) => {
+const LogItem = ({ log, handleOpenLogModal, handleEditLog, deleteLog }) => {
   let warnStatus =
     log.warn == true
       ? "card-title red-text lighten-1"
       : "card-title teal-text lighten-1";
   return (
     <div
-      onClick={handleOpenLogModal}
+      // onClick={() => {
+      //   handleOpenLogModal();
+      //   handleEditLog(log.id);
+      // }}
+      // onClick={() => handleEditLog(log.id)}
       key={log.id}
       style={{
         marginBottom: "50px",
@@ -38,8 +42,16 @@ const LogItem = ({ log, handleOpenLogModal }) => {
             </Typography>
           </CardContent>
           <CardActionArea className="col s1">
-            <IconButton>
+            <IconButton onClick={() => deleteLog(log.id)}>
               <Delete />
+            </IconButton>
+            <IconButton
+              onClick={() => {
+                handleOpenLogModal();
+                handleEditLog(log.id);
+              }}
+            >
+              <Edit />
             </IconButton>
           </CardActionArea>
         </div>

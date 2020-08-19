@@ -25,4 +25,14 @@ module.exports = {
       console.log("error: ", error);
     }
   },
+  async deleteTech(req, res) {
+    const { id } = req.params;
+    try {
+      const data = await knex("tech").where("id", id).del();
+      console.log("deleteTech: ", data);
+      res.json(data);
+    } catch (err) {
+      console.log("error: ", err);
+    }
+  },
 };

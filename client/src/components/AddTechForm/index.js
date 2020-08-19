@@ -26,18 +26,21 @@ const useStyles = makeStyles({
   },
 });
 
-const AddTechForm = () => {
+const AddTechForm = ({ formTech, handleFormTech, submitFormTech }) => {
   const classes = useStyles();
 
   return (
     <div className={classes.wrapper}>
-      <form className={classes.form}>
+      <form onSubmit={submitFormTech} className={classes.form}>
         <h2>Create Tech</h2>
         <FormControl>
           <TextField
             // className={classes.formControll}
             id="standard-basic"
             label="First Name"
+            name="firstname"
+            onChange={handleFormTech}
+            value={formTech.firstname}
           />
         </FormControl>
         <FormControl>
@@ -45,10 +48,18 @@ const AddTechForm = () => {
             // className={classes.formControll}
             id="standard-basic"
             label="Last Name"
+            name="lastname"
+            onChange={handleFormTech}
+            value={formTech.lastname}
           />
         </FormControl>
 
-        <Button className={classes.action} variant="contained" color="primary">
+        <Button
+          type="submit"
+          className={classes.action}
+          variant="contained"
+          color="primary"
+        >
           Enter
         </Button>
       </form>

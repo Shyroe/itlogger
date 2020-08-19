@@ -4,9 +4,10 @@ module.exports = {
   async index(req, res) {
     try {
       // const data = await knex('log').select('*')
-      const data = await knex("log")
-        .innerJoin("tech", "log.tech_id", "=", "tech.id")
-        .select("*");
+      const data = await // knex("log")
+      //   .innerJoin("tech", "tech.id", "=", "log.tech_id")
+      //   .select("*");
+      knex("tech").innerJoin("log", "tech.id", "=", "log.tech_id").select("*");
       console.log("log index: ", data);
       res.json(data);
     } catch (err) {
@@ -19,7 +20,7 @@ module.exports = {
     const newLog = {
       description,
       warn,
-      tech_id,
+      tech_id: tech_id,
     };
     try {
       const data = await knex("log").insert(newLog).returning("*");

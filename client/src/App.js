@@ -58,10 +58,16 @@ function App() {
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openTechModal, setOpenTechModal] = useState(false);
   const [openTechListModal, setOpenTechListModal] = useState(false);
-  const [editLog, setEditLog] = useState(true);
+  const [editLog, setEditLog] = useState(false);
   const [logs, setLogs] = useState([]);
   const [techs, setTechs] = useState([]);
+  const [formTech, setFormTech] = useState({
+    id: null,
+    firstname: "",
+    lastname: "",
+  });
   const [formLog, setFormLog] = useState({
+    id: null,
     description: "",
     warn: false,
     tech: "",
@@ -69,12 +75,50 @@ function App() {
 
   const clearForm = () => {
     setFormLog({
+      id: null,
       description: "",
       warn: false,
       tech: "",
     });
+
+    setFormTech({
+      id: null,
+      firstname: "",
+      lastname: "",
+    });
   };
 
+  // formTech
+  const handleFormTech = (e) => {
+    setFormTech({
+      ...formTech,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const submitFormTech = async (e) => {
+    e.preventDefault();
+
+    const newTech = {
+      firstname: formTech.firstname,
+      lastname: formTech.lastname,
+    };
+
+    const data = await api.post("/techs", newTech);
+    console.log("Tech submit: ", data);
+    clearForm();
+    getAllTechs();
+  };
+
+  const deleteTech = async (id) => {
+    console.log("delete tech id: ", id);
+    const data = await api.delete(`/techs/${id}`);
+    console.log("deleteTech: ", data);
+
+    getAllTechs();
+  };
+
+  // Log
   const handleFormLog = (e) => {
     // console.log("Handle targetName: ", e.target.name);
     // console.log("Handle targetValue: ", e.target.value);
@@ -100,20 +144,39 @@ function App() {
 
     console.log("techItem: ", techItem);
 
-    const newLog = {
-      description: formLog.description,
-      warn: formLog.warn,
-      // tech_id: techItem.id,
-    };
+    if (formLog.id == null) {
+      // Create Log
+      const newLog = {
+        description: formLog.description,
+        warn: formLog.warn,
+      };
 
-    console.log("submit newLog: ", newLog);
+      console.log("submit newLog: ", newLog);
 
-    const dataLog = await api.post("/logs", newLog, {
-      headers: {
-        tech_id: techItem.id,
-      },
-    });
-    console.log("submit Log: ", dataLog);
+      const dataLog = await api.post("/logs", newLog, {
+        headers: {
+          tech_id: techItem.id,
+        },
+      });
+      console.log("submit Log: ", dataLog);
+    } else {
+      //Update Log
+      const newLog = {
+        description: formLog.description,
+        warn: formLog.warn,
+      };
+      console.log("Update formLog: ", formLog);
+      console.log("Update newLog: ", newLog);
+
+      const dataLog = await api.put(`/logs/${formLog.id}`, newLog, {
+        headers: {
+          tech_id: techItem.id,
+        },
+      });
+
+      console.log("Updated Log: ", dataLog);
+    }
+
     getAllLogs();
     clearForm();
   };
@@ -124,19 +187,28 @@ function App() {
     const selectedItem = logs.find((item) => item.id == id);
     console.log("selectedItem: ", selectedItem);
 
+    const selectedTech = techs.find((item) => item.id == selectedItem.tech_id);
+    console.log("getTech: ", selectedTech);
+
+    let fullname = selectedTech.firstname + " " + selectedTech.lastname;
+    console.log("editLog fullname: ", fullname);
+
     setFormLog({
       ...formLog,
+      id: selectedItem.id,
       description: selectedItem.description,
       warn: selectedItem.warn,
-      tech: selectedItem.tech,
+      tech: fullname,
     });
+
+    console.log("editLog formLog: ", formLog);
   }
 
   async function deleteLog(id) {
     console.log("deleteLog Id: ", id);
     const dataLog = await api.delete(`/logs/${id}`);
-    console.log("dataLog: ", dataLog);
-    // getAllLogs();
+    // console.log("dataLog: ", dataLog);
+    getAllLogs();
   }
 
   function initMaterialize() {
@@ -144,6 +216,7 @@ function App() {
   }
 
   async function getAllLogs() {
+    setEditLog(false);
     const logsData = await api.get("/logs");
     console.log("LogsData: ", logsData);
     setLogs([...logsData.data]);
@@ -210,7 +283,12 @@ function App() {
         <Container className="list-logs">
           <>
             {logs.map((log) => (
-              <LogItem handleOpenLogModal={handleOpenLogModal} log={log} />
+              <LogItem
+                handleEditLog={handleEditLog}
+                deleteLog={deleteLog}
+                handleOpenLogModal={handleOpenLogModal}
+                log={log}
+              />
             ))}
           </>
         </Container>
@@ -228,6 +306,7 @@ function App() {
           formLog={formLog}
           setFormLog={setFormLog}
           techs={techs}
+          editLog={editLog}
         />
       </Modal>
 
@@ -238,7 +317,11 @@ function App() {
         aria-describedby="simple-modal-description"
         className={classes.modalStyle}
       >
-        <AddTechForm />
+        <AddTechForm
+          formTech={formTech}
+          handleFormTech={handleFormTech}
+          submitFormTech={submitFormTech}
+        />
       </Modal>
 
       <Modal
@@ -258,7 +341,7 @@ function App() {
           </Typography>
           <>
             {techs.map((tech) => (
-              <TechItem tech={tech} />
+              <TechItem deleteTech={deleteTech} tech={tech} />
             ))}
           </>
         </div>
