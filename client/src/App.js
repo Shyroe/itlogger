@@ -60,6 +60,8 @@ function App() {
   const [openTechListModal, setOpenTechListModal] = useState(false);
   const [editLog, setEditLog] = useState(false);
   const [logs, setLogs] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchLogs, setSearchLogs] = useState([]);
   const [techs, setTechs] = useState([]);
   const [formTech, setFormTech] = useState({
     id: null,
@@ -86,6 +88,19 @@ function App() {
       firstname: "",
       lastname: "",
     });
+  };
+
+  const handleSearchLog = (e) => {
+    let target = e.target.value.toLowerCase();
+    console.log("handleSearchLog logs: ", logs);
+    console.log("target: ", target);
+    const filteredLogs = logs.filter((log) => {
+      let items = log.description.toLowerCase().trim().includes(target);
+      return items;
+    });
+    console.log("FilteredLogs: ", filteredLogs);
+    setSearchLogs([...filteredLogs]);
+    setSearch(target);
   };
 
   // formTech
@@ -168,6 +183,7 @@ function App() {
       };
       console.log("Update formLog: ", formLog);
       console.log("Update newLog: ", newLog);
+      console.log("Update techItem: ", techItem);
 
       const dataLog = await api.put(`/logs/${formLog.id}`, newLog, {
         headers: {
@@ -273,6 +289,8 @@ function App() {
               className="input-field text-grey lighten-3"
               id="standard-basic"
               label="Search Logs..."
+              onChange={handleSearchLog}
+              value={search}
             />
           </form>
         </Toolbar>
@@ -283,14 +301,26 @@ function App() {
         </Container>
         <Container className="list-logs">
           <>
-            {logs.map((log) => (
-              <LogItem
-                handleEditLog={handleEditLog}
-                deleteLog={deleteLog}
-                handleOpenLogModal={handleOpenLogModal}
-                log={log}
-              />
-            ))}
+            {
+              // searchLogs.length > 0
+              search != ""
+                ? searchLogs.map((log) => (
+                    <LogItem
+                      handleEditLog={handleEditLog}
+                      deleteLog={deleteLog}
+                      handleOpenLogModal={handleOpenLogModal}
+                      log={log}
+                    />
+                  ))
+                : logs.map((log) => (
+                    <LogItem
+                      handleEditLog={handleEditLog}
+                      deleteLog={deleteLog}
+                      handleOpenLogModal={handleOpenLogModal}
+                      log={log}
+                    />
+                  ))
+            }
           </>
         </Container>
       </Container>
