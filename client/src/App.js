@@ -133,7 +133,8 @@ function App() {
     //editLog
     setEditLog(false);
 
-    const techItem = techs.find((tech) => {
+    console.log("formLog: ", formLog);
+    let techItem = techs.find((tech) => {
       let fullname = tech.firstname + tech.lastname;
       let techTrated = formLog.tech.trim().replace(" ", "");
       // console.log("fullnameTrated: ", tratedFullname);

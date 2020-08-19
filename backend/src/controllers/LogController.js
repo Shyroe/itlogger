@@ -34,6 +34,7 @@ module.exports = {
   async update(req, res) {
     const { description, warn } = req.body;
     const { log_id } = req.params;
+    const { tech_id } = req.headers;
 
     // const dataLog = await knex("log").where("id", log_id).returning("*");
     // console.log("dataLog: ", dataLog);
@@ -45,6 +46,7 @@ module.exports = {
       // id: log_id,
       description,
       warn,
+      tech_id,
     };
     try {
       const data = await knex("log")
