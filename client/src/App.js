@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     // color: theme.palette.grey,
     // "& > *": {
     //   color: "red",
-    //   backgroundColor: "#f5f5f5",
+    //   // backgroundColor: "#f5f5f5",
     //   // margin: theme.spacing,
     //   width: "60%",
     // },
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     height: "auto",
     margin: "15vh auto",
     backgroundColor: "white",
-    border: "2px solid orangered",
+    // border: "2px solid orangered",
   },
   modalContent: {
     backgroundColor: "white",
@@ -95,7 +95,11 @@ function App() {
     console.log("handleSearchLog logs: ", logs);
     console.log("target: ", target);
     const filteredLogs = logs.filter((log) => {
-      let items = log.description.toLowerCase().trim().includes(target);
+      // let items = log.description.toLowerCase().trim().includes(target);
+      let items =
+        log.description.toLowerCase().trim().includes(target) ||
+        log.firstname.toLowerCase().trim().includes(target) ||
+        log.lastname.toLowerCase().trim().includes(target);
       return items;
     });
     console.log("FilteredLogs: ", filteredLogs);
@@ -217,7 +221,6 @@ function App() {
       warn: selectedItem.warn,
       tech: fullname,
     });
-
     console.log("editLog formLog: ", formLog);
   }
 
@@ -255,6 +258,7 @@ function App() {
     setOpenLogModal(true);
   };
   const handleCloseLogModal = () => {
+    setEditLog(false);
     setOpenLogModal(false);
   };
 
@@ -286,7 +290,7 @@ function App() {
           </IconButton>
           <form className={classes.searchForm} noValidate autoComplete="off">
             <TextField
-              className="input-field text-grey lighten-3"
+              className={`input-field red-text text-lighten-1`}
               id="standard-basic"
               label="Search Logs..."
               onChange={handleSearchLog}
@@ -297,7 +301,9 @@ function App() {
       </AppBar>
       <Container className="system-logs" maxWidth>
         <Container>
-          <Typography className="system-title">System Logs</Typography>
+          <Typography component="h2" variant="h3" className="system-title">
+            System Logs
+          </Typography>
         </Container>
         <Container className="list-logs">
           <>
